@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="yandex-verification" content="18d4ace8f59e0e9d" />
+<meta name="google-site-verification" content="z6RSeMj51fp8v-guUMj75zJkRy9WA2FiTjRW0bqXU1g" />
+<meta name="google-adsense-account" content="ca-pub-5506251863984103">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Surai — казахстанский поисковик by Synthetix Lab">
+<meta name="theme-color" content="#f2f9f9">
+<title>Surai</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%232fb7ad'/%3E%3Cstop offset='1' stop-color='%234aa8e0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='40' height='40' rx='12' fill='url(%23g)'/%3E%3Ccircle cx='19' cy='19' r='8' fill='none' stroke='white' stroke-width='3.2'/%3E%3Cpath d='M25 25l6 6' stroke='white' stroke-width='3.2' stroke-linecap='round'/%3E%3C/svg%3E">
+<script>
+(function(){try{
+  var t=JSON.parse(localStorage.getItem('surai.theme'));
+  if(t!=='light'&&t!=='dark'){t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}
+  document.documentElement.setAttribute('data-theme',t);
+}catch(e){}})();
+</script>
+<style>
+:root{
+  --bg:#f2f9f9; --surface:#ffffff; --surface-2:#e8f4f4; --border:#d3e7e7;
+  --text:#17302f; --muted:#5d7d7c;
+  --accent:#1c928c; --accent-hover:#167d78; --accent-soft:#dbf0ee; --accent-ink:#126f6a; --on-accent:#ffffff;
+  --link:#1b6c92; --glow:rgba(42,166,160,.13); --glow2:rgba(74,168,224,.10);
+  --g1:#1c928c; --g2:#3b93cf;
+  --shadow:0 2px 14px rgba(23,48,47,.07); --shadow-lg:0 18px 50px rgba(23,48,47,.18);
+  --danger:#c0473f;
+}
+:root[data-theme="dark"]{
+  --bg:#0e1819; --surface:#142224; --surface-2:#1a2d2f; --border:#25393b;
+  --text:#d9ecea; --muted:#8aa9a7;
+  --accent:#3fbdb4; --accent-hover:#58d0c7; --accent-soft:#17383a; --accent-ink:#76dcd4; --on-accent:#06201e;
+  --link:#86d8e6; --glow:rgba(63,189,180,.11); --glow2:rgba(80,160,220,.08);
+  --g1:#52cdc4; --g2:#6cb6ee;
+  --shadow:0 2px 14px rgba(0,0,0,.35); --shadow-lg:0 18px 50px rgba(0,0,0,.55);
+  --danger:#ef7c74;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  font-family:Inter,"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;
+  background:var(--bg);color:var(--text);min-height:100vh;min-height:100dvh;
+  display:flex;flex-direction:column;transition:background .25s,color .25s;
+  -webkit-font-smoothing:antialiased;
+}
+body.home{
+  background:
+    radial-gradient(900px 420px at 50% -8%,var(--glow),transparent 70%),
+    radial-gradient(700px 360px at 85% 8%,var(--glow2),transparent 70%),
+    var(--bg);
+}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+[hidden]{display:none!important}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.ico{display:inline-flex;width:20px;height:20px;flex:none}
+.ico svg{width:100%;height:100%}
+
+/* ---------- Топбар ---------- */
+.topbar{position:sticky;top:0;z-index:30;transition:background .25s}
+.bar{display:flex;align-items:center;gap:24px;padding:12px 24px}
+body.results .topbar{background:color-mix(in srgb,var(--surface) 94%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+body.home .topbar{position:absolute;left:0;right:0;top:0}
+body.home .topbar .brand,body.home #hdrBox,body.home .tabs{display:none}
+.controls{display:flex;align-items:center;gap:8px;margin-left:auto}
+
+.brand{display:inline-flex;align-items:flex-end;gap:9px;text-decoration:none;color:inherit;min-width:172px}
+.brand .logo{width:34px;height:34px;flex:none;align-self:center}
+.brand .word{font-size:27px;font-weight:800;letter-spacing:-.8px;line-height:1;background:linear-gradient(135deg,var(--g1),var(--g2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand .by{font-size:11px;color:var(--muted);margin-bottom:2px;white-space:nowrap;letter-spacing:.2px}
+.brand.big{gap:14px;min-width:0}
+.brand.big .logo{width:66px;height:66px}
+.brand.big .word{font-size:72px;letter-spacing:-3px}
+.brand.big .by{font-size:14px;margin-bottom:8px}
+
+.icon-btn{width:38px;height:38px;border-radius:10px;border:1px solid transparent;background:transparent;color:var(--muted);display:inline-flex;align-items:center;justify-content:center;transition:.15s;flex:none}
+.icon-btn:hover{background:var(--surface-2);color:var(--text)}
+.controls .icon-btn{border-color:var(--border);background:var(--surface)}
+.controls .icon-btn:hover{border-color:var(--accent);color:var(--accent-ink)}
+.seg{display:inline-flex;background:var(--surface-2);border:1px solid var(--border);border-radius:11px;padding:2px}
+.seg button{border:0;background:transparent;color:var(--muted);padding:6px 11px;border-radius:9px;font-weight:600;font-size:13px;transition:.15s}
+.seg button.on{background:var(--surface);color:var(--accent-ink);box-shadow:0 1px 4px rgba(0,0,0,.1)}
+.seg.full{display:flex;width:100%}.seg.full button{flex:1;padding:8px}
+.i-sun{display:none}
+:root[data-theme="dark"] .i-sun{display:inline-flex}
+:root[data-theme="dark"] .i-moon{display:none}
+.btn-login{height:38px;padding:0 16px;border-radius:10px;border:1px solid var(--accent);background:var(--accent-soft);color:var(--accent-ink);font-weight:600;font-size:14px;transition:.15s}
+.btn-login:hover{background:var(--accent);color:var(--on-accent)}
+.btn-primary{height:44px;padding:0 20px;border-radius:11px;border:0;background:var(--accent);color:var(--on-accent);font-weight:600;font-size:15px;transition:.15s}
+.btn-primary:hover{background:var(--accent-hover)}
+.btn-primary.wide{width:100%}
+.btn-ghost{height:40px;padding:0 16px;border-radius:10px;border:1px solid var(--border);background:var(--surface);font-size:14px;transition:.15s}
+.btn-ghost:hover{border-color:var(--danger);color:var(--danger)}
+.avatar{width:38px;height:38px;border-radius:50%;border:2px solid var(--accent);background:var(--accent-soft);color:var(--accent-ink);font-weight:700;overflow:hidden;padding:0;display:inline-flex;align-items:center;justify-content:center}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.usermenu-wrap{position:relative}
+.usermenu{position:absolute;right:0;top:46px;min-width:230px;background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow-lg);padding:8px;z-index:60}
+.usermenu .who{padding:10px 12px;border-bottom:1px solid var(--border);margin-bottom:6px}
+.usermenu .who b{display:block;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.usermenu .who span{font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
+.usermenu button{display:flex;align-items:center;gap:10px;width:100%;border:0;background:transparent;padding:9px 12px;border-radius:9px;font-size:14px;text-align:left}
+.usermenu button:hover{background:var(--surface-2)}
+
+/* ---------- Строка поиска ---------- */
+.search-box{position:relative;flex:1;max-width:720px;width:100%}
+.search-form{display:flex;align-items:center;gap:2px;background:var(--surface);border:2px solid var(--border);border-radius:15px;padding-left:14px;transition:border-color .15s,box-shadow .15s;box-shadow:var(--shadow)}
+.search-form:focus-within{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
+.search-form .lead{color:var(--muted)}
+.search-form input{flex:1;min-width:0;height:46px;border:0;outline:0;background:transparent;padding:0 8px 0 10px;font-size:17px}
+.search-form input::placeholder{color:var(--muted);opacity:.8}
+.search-form .go{height:calc(100% - 8px);align-self:stretch;margin:4px;padding:0 22px;border:0;border-radius:11px;background:var(--accent);color:var(--on-accent);font-weight:600;font-size:15px;transition:.15s}
+.search-form .go:hover{background:var(--accent-hover)}
+.search-form .lucky{height:calc(100% - 8px);align-self:stretch;margin:4px 4px 4px 0;padding:0 14px;border:0;border-radius:11px;background:transparent;color:var(--accent-ink);font-weight:600;font-size:13px;transition:.15s;white-space:nowrap}
+.search-form .lucky:hover{background:var(--accent-soft)}
+.search-form .mic.on{color:var(--danger);animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.4}}
+.suggest{position:absolute;left:0;right:0;top:calc(100% + 8px);background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow-lg);padding:6px;z-index:50;overflow:hidden}
+.sug-title{padding:6px 12px 4px;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
+.sug-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:9px;cursor:pointer;font-size:15px}
+.sug-item .ico{color:var(--muted);width:18px;height:18px}
+.sug-item.active,.sug-item:hover{background:var(--surface-2)}
+.sug-text{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sug-trend{color:var(--accent);font-size:11px;font-weight:700;margin-left:4px}
+.sug-del{border:0;background:transparent;color:var(--muted);font-size:20px;line-height:1;width:26px;height:26px;border-radius:7px}
+.sug-del:hover{background:var(--border);color:var(--text)}
+
+.tabs{display:flex;gap:4px;padding:0 24px}
+.tab{border:0;background:transparent;padding:9px 14px;font-size:15px;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;transition:.15s}
+.tab:hover{color:var(--text)}
+.tab.on{color:var(--text);border-bottom-color:var(--accent);font-weight:600}
+
+/* ---------- Главная ---------- */
+main{flex:1;display:flex;flex-direction:column}
+.home-view{flex:1;display:flex;flex-direction:column;align-items:center;padding:90px 20px 40px;gap:26px}
+.home-top{display:flex;flex-direction:column;align-items:center;gap:26px}
+.tagline{margin:-8px 0 0;color:var(--muted);font-size:16px}
+.home-view .search-box{max-width:690px}
+.home-view .search-form input{height:56px;font-size:18px}
+
+/* Быстрые ссылки */
+.shortcuts{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;max-width:720px;margin-top:8px}
+.shortcut{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 8px;border-radius:12px;text-decoration:none;color:var(--text);width:80px;transition:.15s;border:1px solid transparent}
+.shortcut:hover{background:var(--surface);border-color:var(--border);transform:translateY(-2px)}
+.shortcut .icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;background:var(--surface-2)}
+.shortcut .name{font-size:12px;color:var(--muted);text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;width:100%}
+
+/* Тренды */
+.trending-section{width:100%;max-width:720px;margin-top:20px}
+.section-title{font-size:13px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.section-title .ico{color:var(--accent);width:16px;height:16px}
+.trends{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.trend-chip{padding:8px 14px;border:1px solid var(--border);background:var(--surface);border-radius:999px;font-size:13px;transition:.15s;cursor:pointer;color:var(--text);text-decoration:none}
+.trend-chip:hover{border-color:var(--accent);color:var(--accent-ink);background:var(--accent-soft)}
+.trend-chip .rank{color:var(--accent);font-weight:700;margin-right:4px}
+
+/* ---------- Лента новостей ---------- */
+.news-feed{width:100%;max-width:1100px;margin:30px auto 0;padding:0 20px}
+.news-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.news-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;transition:.2s;cursor:pointer;display:flex;flex-direction:column;text-decoration:none;color:inherit}
+.news-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);border-color:var(--accent)}
+.news-card.featured{grid-column:span 2}
+.news-card .img{width:100%;height:180px;background:var(--surface-2);overflow:hidden;position:relative}
+.news-card.featured .img{height:240px}
+.news-card .img img{width:100%;height:100%;object-fit:cover;transition:transform .3s}
+.news-card:hover .img img{transform:scale(1.05)}
+.news-card .img .placeholder{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:48px}
+.news-card .body{padding:14px 16px;flex:1;display:flex;flex-direction:column}
+.news-card .source{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);margin-bottom:6px}
+.news-card .source img{width:16px;height:16px;border-radius:3px}
+.news-card .source b{color:var(--text);font-weight:600}
+.news-card h3{margin:0 0 6px;font-size:16px;font-weight:600;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.news-card.featured h3{font-size:20px}
+.news-card p{margin:0;font-size:14px;line-height:1.5;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;flex:1}
+.news-card .meta{margin-top:8px;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px}
+.news-card .badge{padding:2px 8px;border-radius:99px;background:var(--accent-soft);color:var(--accent-ink);font-size:11px;font-weight:600;text-transform:uppercase}
+.news-skeleton{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;height:320px}
+.news-skeleton .img{height:180px;background:linear-gradient(90deg,var(--surface-2),var(--border),var(--surface-2));background-size:200% 100%;animation:sh 1.3s infinite linear}
+.news-skeleton .body{padding:14px 16px}
+.news-skeleton .sk{height:12px;margin-bottom:10px;background:linear-gradient(90deg,var(--surface-2),var(--border),var(--surface-2));background-size:200% 100%;animation:sh 1.3s infinite linear;border-radius:6px}
+@keyframes sh{to{background-position:-200% 0}}
+
+/* ---------- Выдача ---------- */
+.results{width:100%;padding:18px 24px 60px}
+.col{max-width:760px}
+.meta{font-size:13px;color:var(--muted);margin:0 0 12px}
+.ai{background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:14px;padding:15px 18px;margin-bottom:10px;box-shadow:var(--shadow)}
+.ai-head{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--accent-ink);font-size:14px;margin-bottom:8px}
+.ai-head .ico{width:18px;height:18px}
+.ai p{margin:0;font-size:15.5px;line-height:1.6;white-space:pre-wrap}
+.ai small{display:block;margin-top:10px;color:var(--muted);font-size:12px}
+.res{padding:14px 0}
+.res-site{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);min-width:0}
+.res-site img{width:18px;height:18px;border-radius:5px;background:var(--surface-2);flex:none}
+.res-site .dom{color:var(--text);opacity:.85;font-weight:500}
+.res-site .path{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.res-title{display:inline-block;font-size:19px;line-height:1.3;color:var(--link);text-decoration:none;font-weight:500;margin:4px 0 5px;word-break:break-word}
+.res-title:hover{text-decoration:underline}
+.res-date{font-size:13px;color:var(--muted);margin-right:6px}
+.res-snippet{margin:0;font-size:15px;line-height:1.55;opacity:.9;word-break:break-word}
+.res-snippet b{font-weight:600;opacity:1}
+.grid{columns:4 190px;column-gap:12px}
+.grid figure{break-inside:avoid;margin:0 0 12px;border-radius:12px;overflow:hidden;background:var(--surface-2);cursor:zoom-in;border:1px solid var(--border);transition:.15s;position:relative}
+.grid figure::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 60%,rgba(0,0,0,.4));opacity:0;transition:.15s;pointer-events:none}
+.grid figure:hover::after{opacity:1}
+.grid figure:hover{border-color:var(--accent);transform:translateY(-2px)}
+.grid img{display:block;width:100%;height:auto;opacity:0;transition:opacity .3s}
+.grid img.loaded{opacity:1}
+.grid figcaption{position:absolute;bottom:0;left:0;right:0;padding:8px 10px;color:#fff;font-size:12px;line-height:1.3;opacity:0;transition:.15s;z-index:1}
+.grid figure:hover figcaption{opacity:1}
+.state{max-width:480px;padding:40px 0;color:var(--muted)}
+.state h3{margin:12px 0 6px;color:var(--text);font-size:19px}
+.state p{margin:0;line-height:1.55}
+.state .ico{width:34px;height:34px;color:var(--accent)}
+.state.err .ico{color:var(--danger)}
+.sk{border-radius:8px;background:linear-gradient(90deg,var(--surface-2),var(--border),var(--surface-2));background-size:200% 100%;animation:sh 1.3s infinite linear}
+.sk-res{padding:16px 0}.sk-res .sk{height:12px;margin-bottom:10px}
+
+footer{padding:18px 24px;text-align:center;font-size:13px;color:var(--muted)}
+footer .by{opacity:.85}
+body.results footer{text-align:left}
+
+/* ---------- Модальные окна ---------- */
+.overlay{position:fixed;inset:0;background:rgba(7,22,22,.5);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;padding:16px;z-index:100}
+.overlay.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:20px;width:100%;max-width:430px;max-height:92vh;overflow:auto;padding:22px;box-shadow:var(--shadow-lg);animation:pop .18s ease-out}
+@keyframes pop{from{transform:translateY(10px) scale(.98);opacity:0}}
+.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.modal-head h2{margin:0;font-size:20px}
+.group{font-size:12px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin:16px 0 4px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:11px 0;border-bottom:1px solid var(--border)}
+.row:last-of-type{border-bottom:0}
+.row .lbl{min-width:0}.row .lbl b{font-weight:600;font-size:15px;display:block}.row .lbl small{color:var(--muted);font-size:12.5px}
+select{border:1px solid var(--border);background:var(--surface-2);border-radius:9px;padding:7px 10px;font-size:14px;max-width:170px}
+.switch{position:relative;width:42px;height:24px;flex:none}
+.switch input{opacity:0;position:absolute;inset:0;margin:0;cursor:pointer;z-index:1;width:100%;height:100%}
+.switch span{position:absolute;inset:0;background:var(--border);border-radius:99px;transition:.2s}
+.switch span::after{content:"";position:absolute;left:3px;top:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.switch input:checked+span{background:var(--accent)}
+.switch input:checked+span::after{transform:translateX(18px)}
+.switch input:focus-visible+span{outline:2px solid var(--accent);outline-offset:2px}
+.btn-google{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:46px;border-radius:11px;border:1px solid var(--border);background:var(--surface);font-weight:600;font-size:15px;transition:.15s}
+.btn-google:hover{border-color:var(--accent);background:var(--surface-2)}
+.btn-google svg{width:20px;height:20px}
+.or{display:flex;align-items:center;gap:12px;margin:16px 0;color:var(--muted);font-size:13px}
+.or::before,.or::after{content:"";flex:1;height:1px;background:var(--border)}
+.field{display:block;margin-top:12px}
+.field span{display:block;font-size:13px;color:var(--muted);margin-bottom:5px}
+.field input{width:100%;height:44px;border:1px solid var(--border);background:var(--surface-2);border-radius:11px;padding:0 13px;font-size:15px;outline:0;transition:.15s}
+.field input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);background:var(--surface)}
+.msg{min-height:20px;margin:10px 0 8px;font-size:13.5px;color:var(--danger)}
+.hint{margin:14px 0 0;font-size:12.5px;color:var(--muted);line-height:1.5}
+.lightbox{max-width:900px;padding:14px;text-align:center}
+.lightbox img{max-width:100%;max-height:72vh;border-radius:12px;display:block;margin:0 auto}
+.lightbox p{margin:10px 0;color:var(--muted);font-size:14px}
+.lightbox a{color:var(--accent-ink);font-weight:600;font-size:14px}
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--text);color:var(--bg);padding:10px 18px;border-radius:11px;font-size:14px;opacity:0;pointer-events:none;transition:.25s;z-index:200}
+.toast.show{opacity:1;transform:translateX(-50%)}
+
+@media(min-width:1000px){
+  .results .col{margin-left:196px}
+  .tabs{padding-left:220px}
+}
+@media(max-width:760px){
+  .bar{flex-wrap:wrap;gap:10px 12px;padding:10px 14px}
+  #hdrBox{order:3;flex-basis:100%;max-width:none}
+  .brand{min-width:0}
+  .tabs{padding:0 10px;overflow-x:auto}
+  .results{padding:14px 16px 50px}
+  .brand.big .logo{width:48px;height:48px}
+  .brand.big .word{font-size:52px;letter-spacing:-2px}
+  .home-view{padding-top:80px}
+  .grid{columns:2 140px}
+  .news-card.featured{grid-column:span 1}
+  .shortcuts{gap:8px}
+  .shortcut{width:70px;padding:8px 6px}
+  .shortcut .icon{width:40px;height:40px;font-size:20px}
+  .search-form .lucky{display:none}
+}
+@media(max-width:520px){
+  .brand:not(.big) .by{display:none}
+  .btn-login{padding:0 12px}
+  .controls{gap:6px}
+  .seg button{padding:6px 8px}
+  .grid{columns:2 120px;column-gap:8px}
+  .news-grid{grid-template-columns:1fr}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body class="home">
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <linearGradient id="sg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2fb7ad"/><stop offset="1" stop-color="#4aa8e0"/></linearGradient>
+</defs></svg>
+
+<template id="tplSearch">
+  <form class="search-form" role="search" autocomplete="off">
+    <i class="ico lead" data-ico="search"></i>
+    <input type="text" name="q" data-i18n-ph="placeholder" enterkeyhint="search" autocapitalize="off" spellcheck="false" maxlength="400" aria-label="Surai">
+    <button type="button" class="icon-btn clear" hidden data-i18n-title="clear"><i class="ico" data-ico="x"></i></button>
+    <button type="button" class="icon-btn mic" data-i18n-title="voice"><i class="ico" data-ico="mic"></i></button>
+    <button type="button" class="lucky" data-i18n="lucky"></button>
+    <button type="submit" class="go" data-i18n="find"></button>
+  </form>
+  <div class="suggest" role="listbox" hidden></div>
+</template>
+
+<header class="topbar">
+  <div class="bar">
+    <a class="brand" href="#" id="brandLink" aria-label="Surai">
+      <svg class="logo" viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="12" fill="url(#sg)"/><circle cx="19" cy="19" r="8" fill="none" stroke="#fff" stroke-width="3.2"/><path d="M25 25l6 6" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/></svg>
+      <span class="word">Surai</span><span class="by">by Synthetix Lab</span>
+    </a>
+    <div class="search-box" id="hdrBox"></div>
+    <div class="controls">
+      <div class="seg" id="langSeg" role="group" aria-label="Language">
+        <button type="button" data-lang="ru">РУ</button>
+        <button type="button" data-lang="kk">ҚАЗ</button>
+      </div>
+      <button type="button" class="icon-btn" id="themeBtn" data-i18n-title="themeSwitch"><i class="ico i-moon" data-ico="moon"></i><i class="ico i-sun" data-ico="sun"></i></button>
+      <button type="button" class="icon-btn" id="settingsBtn" data-i18n-title="settings"><i class="ico" data-ico="sliders"></i></button>
+      <button type="button" class="btn-login" id="loginBtn" data-i18n="login"></button>
+      <div class="usermenu-wrap" id="userWrap" hidden>
+        <button type="button" class="avatar" id="userBtn" aria-haspopup="true"></button>
+        <div class="usermenu" id="userMenu" hidden>
+          <div class="who"><b id="umName"></b><span id="umEmail"></span></div>
+          <button type="button" id="umSettings"><i class="ico" data-ico="sliders"></i><span data-i18n="settings"></span></button>
+          <button type="button" id="umLogout"><i class="ico" data-ico="logout"></i><span data-i18n="logout"></span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <nav class="tabs" id="tabs" hidden>
+    <button class="tab" data-tab="all" data-i18n="tabAll"></button>
+    <button class="tab" data-tab="news" data-i18n="tabNews"></button>
+    <button class="tab" data-tab="images" data-i18n="tabImages"></button>
+  </nav>
+</header>
+
+<main>
+  <section class="home-view" id="homeView">
+    <div class="home-top">
+      <a class="brand big" href="#" tabindex="-1" aria-hidden="true" style="pointer-events:none">
+        <svg class="logo" viewBox="0 0 40 40"><rect width="40" height="40" rx="12" fill="url(#sg)"/><circle cx="19" cy="19" r="8" fill="none" stroke="#fff" stroke-width="3.2"/><path d="M25 25l6 6" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/></svg>
+        <span class="word">Surai</span><span class="by">by Synthetix Lab</span>
+      </a>
+      <p class="tagline" data-i18n="tagline"></p>
+      <div class="search-box" id="homeBox"></div>
+      <div class="shortcuts" id="shortcuts"></div>
+      <div class="trending-section">
+        <div class="section-title"><i class="ico" data-ico="flame"></i><span data-i18n="trending"></span></div>
+        <div class="trends" id="trends"></div>
+      </div>
+    </div>
+    <section class="news-feed" id="newsFeed">
+      <div class="section-title"><i class="ico" data-ico="news"></i><span data-i18n="newsFeed"></span></div>
+      <div class="news-grid" id="newsGrid"></div>
+    </section>
+  </section>
+
+  <section class="results" id="resultsView" hidden>
+    <div class="col" id="results" aria-live="polite"></div>
+  </section>
+</main>
+
+<footer><span data-i18n="footer"></span> · <span class="by">by Synthetix Lab</span> · © 2026</footer>
+
+<!-- Настройки -->
+<div class="overlay" id="settingsModal" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal-head"><h2 data-i18n="settings"></h2><button class="icon-btn" data-close data-i18n-title="close"><i class="ico" data-ico="x"></i></button></div>
+
+    <div class="group" data-i18n="gAppearance"></div>
+    <div class="row"><div class="lbl"><b data-i18n="lblTheme"></b></div>
+      <div class="seg"><button type="button" data-theme-set="light" data-i18n="light"></button><button type="button" data-theme-set="dark" data-i18n="dark"></button></div></div>
+    <div class="row"><div class="lbl"><b data-i18n="lblLang"></b></div>
+      <div class="seg"><button type="button" data-lang="ru">РУ</button><button type="button" data-lang="kk">ҚАЗ</button></div></div>
+
+    <div class="group" data-i18n="gSearch"></div>
+    <div class="row"><div class="lbl"><b data-i18n="setCount"></b></div>
+      <select id="setCount"><option>5</option><option>10</option><option>15</option><option>20</option></select></div>
+    <div class="row"><div class="lbl"><b data-i18n="setDepth"></b></div>
+      <select id="setDepth"><option value="basic" data-i18n="depthBasic"></option><option value="advanced" data-i18n="depthAdv"></option></select></div>
+    <div class="row"><div class="lbl"><b data-i18n="setTime"></b></div>
+      <select id="setTime"><option value="" data-i18n="tAny"></option><option value="day" data-i18n="tDay"></option><option value="week" data-i18n="tWeek"></option><option value="month" data-i18n="tMonth"></option><option value="year" data-i18n="tYear"></option></select></div>
+    <div class="row"><div class="lbl"><b data-i18n="setKz"></b><small data-i18n="setKzHint"></small></div>
+      <label class="switch"><input type="checkbox" id="setKz"><span></span></label></div>
+    <div class="row"><div class="lbl"><b data-i18n="setAi"></b></div>
+      <label class="switch"><input type="checkbox" id="setAi"><span></span></label></div>
+
+    <div class="group" data-i18n="gPrivacy"></div>
+    <div class="row"><div class="lbl"><b data-i18n="setHist"></b></div>
+      <label class="switch"><input type="checkbox" id="setHist"><span></span></label></div>
+    <div class="row"><div class="lbl"></div><button type="button" class="btn-ghost" id="clearHist" data-i18n="clearHist"></button></div>
+  </div>
+</div>
+
+<!-- Вход -->
+<div class="overlay" id="authModal" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal-head"><h2 data-i18n="authTitle"></h2><button class="icon-btn" data-close data-i18n-title="close"><i class="ico" data-ico="x"></i></button></div>
+    <button type="button" class="btn-google" id="googleBtn">
+      <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+      <span data-i18n="googleBtn"></span>
+    </button>
+    <div class="or"><span data-i18n="or"></span></div>
+    <div class="seg full" id="authTabs">
+      <button type="button" data-auth="login" class="on" data-i18n="tabLogin"></button>
+      <button type="button" data-auth="register" data-i18n="tabRegister"></button>
+    </div>
+    <form id="authForm" novalidate>
+      <label class="field" id="nameField" hidden><span data-i18n="fName"></span><input id="aName" autocomplete="name" maxlength="60"></label>
+      <label class="field"><span data-i18n="fEmail"></span><input id="aEmail" type="email" autocomplete="email" maxlength="120"></label>
+      <label class="field"><span data-i18n="fPass"></span><input id="aPass" type="password" autocomplete="current-password" maxlength="100"></label>
+      <p class="msg" id="authMsg" role="alert"></p>
+      <button class="btn-primary wide" id="authSubmit" type="submit"></button>
+    </form>
+    <p class="hint" data-i18n="authNote"></p>
+  </div>
+</div>
+
+<div class="overlay" id="lightbox" role="dialog" aria-modal="true">
+  <div class="modal lightbox">
+    <img id="lbImg" alt="" referrerpolicy="no-referrer">
+    <p id="lbCap"></p>
+    <a id="lbOpen" target="_blank" rel="noopener noreferrer" data-i18n="openOrig"></a>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
+<script>
+(() => {
+'use strict';
+
+/* =====================================================================
+   КОНФИГУРАЦИЯ
+   ===================================================================== */
+const CONFIG = {
+  // URL бэкенда на Render
+  API_BASE: 'https://surai-api.onrender.com',
+  // Fallback прямой запрос к Tavily (если бэкенд недоступен)
+  TAVILY_DIRECT_KEY: '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',
+  TAVILY_ENDPOINT: 'https://api.tavily.com/search',
+  
+  // Firebase
+  FIREBASE_CONFIG: {
+    const CONFIG = {
+  // URL бэкенда на Render (после деплоя)
+  API_BASE: 'https://surai-api.onrender.com',
+  
+  // Fallback прямой запрос к Tavily
+  TAVILY_DIRECT_KEY: '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',
+  TAVILY_ENDPOINT: 'https://api.tavily.com/search',
+  
+  // 🔥 ТВОЙ НАСТОЯЩИЙ FIREBASE КОНФИГ
+  FIREBASE_CONFIG: {
+    apiKey: "AIzaSyAhfpooEWP_Z_e_KTfu8zMNnso4bFTMDPU",
+    authDomain: "herukma.firebaseapp.com",
+    projectId: "herukma",
+    storageBucket: "herukma.firebasestorage.app",
+    messagingSenderId: "25479439359",
+    appId: "1:25479439359:web:ef0a76a39fa60956b83dca"
+  },
+  
+  IMAGES_PER_PAGE: 30,
+  USE_BACKEND: true
+};
+  },
+  
+  IMAGES_PER_PAGE: 30,
+  USE_BACKEND: true
+};
+
+// Инициализация Firebase
+let firebaseApp = null, firebaseAuth = null;
+try {
+  firebaseApp = firebase.initializeApp(CONFIG.FIREBASE_CONFIG);
+  firebaseAuth = firebase.auth();
+  firebaseAuth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+} catch (e) {
+  console.warn('[Firebase] init failed:', e);
+}
+
+/* ---------- утилиты ---------- */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const store = {
+  get(k, d) { try { const v = localStorage.getItem('surai.' + k); return v === null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v) { try { localStorage.setItem('surai.' + k, JSON.stringify(v)); } catch {} },
+  del(k) { try { localStorage.removeItem('surai.' + k); } catch {} }
+};
+function el(tag, props = {}, ...kids) {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(props)) {
+    if (v == null || v === false) continue;
+    if (k === 'class') n.className = v;
+    else if (k === 'text') n.textContent = v;
+    else n.setAttribute(k, v === true ? '' : v);
+  }
+  kids.flat().forEach(c => { if (c != null && c !== false) n.append(c); });
+  return n;
+}
+function safeUrl(u) {
+  try { const x = new URL(u); return (x.protocol === 'http:' || x.protocol === 'https:') ? x.href : null; } catch { return null; }
+}
+
+/* ---------- иконки ---------- */
+const ICONS = {
+  search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+  mic: '<rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',
+  x: '<path d="M6 6l12 12M18 6 6 18"/>',
+  sliders: '<path d="M4 7h3M11 7h9M4 12h7M15 12h5M4 17h2M10 17h10"/><circle cx="9" cy="7" r="2"/><circle cx="13" cy="12" r="2"/><circle cx="8" cy="17" r="2"/>',
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  moon: '<path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/>',
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  alert: '<circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5h.01"/>',
+  logout: '<path d="M9 4H5v16h4M16 8l4 4-4 4M20 12H9"/>',
+  spark: '<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 16l.7 1.8L21.5 18.5l-1.8.7L19 21l-.7-1.8-1.8-.7 1.8-.7z"/>',
+  flame: '<path d="M12 2s4 5 4 10a4 4 0 0 1-8 0c0-3 1-5 2-7 1-2 2-3 2-3z"/><path d="M8 14a4 4 0 0 0 8 0"/>',
+  news: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 7h6M7 11h10M7 15h4"/>',
+  empty: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5M8.5 11h5"/>',
+  share: '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.59 13.51 6.83 3.98M15.41 6.51l-6.82 3.98"/>'
+};
+function iconMarkup(n) {
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICONS[n] || '') + '</svg>';
+}
+function iconEl(n) { const i = el('i', { class: 'ico' }); i.innerHTML = iconMarkup(n); return i; }
+function fillIcons(root = document) { $$('[data-ico]', root).forEach(n => { if (!n.firstChild) n.innerHTML = iconMarkup(n.dataset.ico); }); }
+
+/* ---------- переводы ---------- */
+const I18N = {
+  ru: {
+    tagline: 'Казахстанский поисковик', placeholder: 'Искать в Surai', find: 'Найти', clear: 'Очистить', voice: 'Голосовой поиск',
+    lucky: 'Мне повезёт',
+    login: 'Войти', logout: 'Выйти', settings: 'Настройки', themeSwitch: 'Сменить тему', close: 'Закрыть',
+    tabAll: 'Все', tabNews: 'Новости', tabImages: 'Картинки',
+    popular: 'Популярное', q1: 'Новости Казахстана', q2: 'Курс доллара к тенге', q3: 'Погода в Астане', q4: 'Рецепт бешбармака', q5: 'Расписание поездов Казахстана',
+    trending: 'Сейчас в тренде',
+    newsFeed: 'Лента новостей', newsError: 'Не удалось загрузить новости',
+    recent: 'Недавние запросы', remove: 'Удалить',
+    aiTitle: 'Ответ Surai', aiNote: 'Ответ сгенерирован ИИ и может содержать ошибки',
+    resCount: 'Результатов: {n}', sec: 'с',
+    noResTitle: 'Ничего не нашлось', noResText: 'Попробуйте изменить запрос или убрать фильтр по периоду в настройках.',
+    errTitle: 'Не удалось выполнить поиск',
+    errGeneric: 'Сервис поиска вернул ошибку. Попробуйте ещё раз чуть позже.',
+    errAuth: 'API-ключ недействителен.',
+    errLimit: 'Превышен лимит запросов.',
+    errNetwork: 'Нет соединения с сервером. Проверьте подключение.',
+    openOrig: 'Открыть оригинал',
+    gAppearance: 'Оформление', lblTheme: 'Тема', light: 'Светлая', dark: 'Тёмная', lblLang: 'Язык',
+    gSearch: 'Поиск', setCount: 'Результатов на странице', setDepth: 'Глубина поиска', depthBasic: 'Быстрый', depthAdv: 'Глубокий',
+    setTime: 'Период', tAny: 'За всё время', tDay: 'За день', tWeek: 'За неделю', tMonth: 'За месяц', tYear: 'За год',
+    setKz: 'Приоритет Казахстана', setKzHint: 'Показывать выше сайты из Казахстана', setAi: 'Ответ ИИ над выдачей',
+    gPrivacy: 'Приватность', setHist: 'Сохранять историю поиска', clearHist: 'Очистить историю', histCleared: 'История очищена',
+    authTitle: 'Вход в Surai', googleBtn: 'Войти через Google', or: 'или', tabLogin: 'Вход', tabRegister: 'Регистрация',
+    fName: 'Имя', fEmail: 'Электронная почта', fPass: 'Пароль', submitLogin: 'Войти', submitRegister: 'Создать аккаунт',
+    authNote: 'Вход работает локально: данные хранятся только в этом браузере.',
+    badEmail: 'Введите корректную почту', shortPass: 'Пароль — не короче 6 символов', emailTaken: 'Эта почта уже зарегистрирована',
+    badCreds: 'Неверная почта или пароль',
+    googleFail: 'Не удалось войти через Google. Попробуйте ещё раз.',
+    welcome: 'Добро пожаловать, {name}!', bye: 'Вы вышли из аккаунта',
+    footer: 'Surai — поиск для Казахстана',
+    loadMore: 'Загрузить ещё',
+    readMore: 'Читать',
+    justNow: 'только что', minutesAgo: '{n} мин назад', hoursAgo: '{n} ч назад', daysAgo: '{n} дн назад'
+  },
+  kk: {
+    tagline: 'Қазақстандық іздеу жүйесі', placeholder: 'Surai арқылы іздеу', find: 'Іздеу', clear: 'Тазалау', voice: 'Дауыспен іздеу',
+    lucky: 'Жолым болады',
+    login: 'Кіру', logout: 'Шығу', settings: 'Баптаулар', themeSwitch: 'Тақырыпты ауыстыру', close: 'Жабу',
+    tabAll: 'Барлығы', tabNews: 'Жаңалықтар', tabImages: 'Суреттер',
+    popular: 'Танымал', q1: 'Қазақстан жаңалықтары', q2: 'Доллардың теңгеге бағамы', q3: 'Астанадағы ауа райы', q4: 'Бешбармақ рецепті', q5: 'Қазақстан пойыздарының кестесі',
+    trending: 'Қазір трендте',
+    newsFeed: 'Жаңалықтар таспасы', newsError: 'Жаңалықтарды жүктеу мүмкін болмады',
+    recent: 'Соңғы сұраныстар', remove: 'Жою',
+    aiTitle: 'Surai жауабы', aiNote: 'Жауапты жасанды интеллект жасады, онда қателер болуы мүмкін',
+    resCount: 'Нәтиже: {n}', sec: 'сек',
+    noResTitle: 'Ештеңе табылмады', noResText: 'Сұранысты өзгертіп көріңіз немесе баптаулардағы кезең сүзгісін алып тастаңыз.',
+    errTitle: 'Іздеуді орындау мүмкін болмады',
+    errGeneric: 'Іздеу қызметі қате қайтарды. Сәлден соң қайталап көріңіз.',
+    errAuth: 'API кілті жарамсыз.',
+    errLimit: 'Сұраныс лимиті асып кетті.',
+    errNetwork: 'Сервермен байланыс жоқ. Қосылымды тексеріңіз.',
+    openOrig: 'Түпнұсқаны ашу',
+    gAppearance: 'Көрініс', lblTheme: 'Тақырып', light: 'Ашық', dark: 'Қараңғы', lblLang: 'Тіл',
+    gSearch: 'Іздеу', setCount: 'Беттегі нәтиже саны', setDepth: 'Іздеу тереңдігі', depthBasic: 'Жылдам', depthAdv: 'Терең',
+    setTime: 'Кезең', tAny: 'Барлық уақыт', tDay: 'Күн ішінде', tWeek: 'Апта ішінде', tMonth: 'Ай ішінде', tYear: 'Жыл ішінде',
+    setKz: 'Қазақстанға басымдық', setKzHint: 'Қазақстандық сайттарды жоғарырақ көрсету', setAi: 'Нәтиже үстіндегі ЖИ жауабы',
+    gPrivacy: 'Құпиялылық', setHist: 'Іздеу тарихын сақтау', clearHist: 'Тарихты тазалау', histCleared: 'Тарих тазартылды',
+    authTitle: 'Surai-ға кіру', googleBtn: 'Google арқылы кіру', or: 'немесе', tabLogin: 'Кіру', tabRegister: 'Тіркелу',
+    fName: 'Аты', fEmail: 'Электрондық пошта', fPass: 'Құпия сөз', submitLogin: 'Кіру', submitRegister: 'Аккаунт құру',
+    authNote: 'Пошта арқылы кіру жергілікті жұмыс істейді: деректер тек осы браузерде сақталады.',
+    badEmail: 'Дұрыс пошта енгізіңіз', shortPass: 'Құпия сөз кемінде 6 таңбадан тұруы керек', emailTaken: 'Бұл пошта тіркелген',
+    badCreds: 'Пошта немесе құпия сөз қате',
+    googleFail: 'Google арқылы кіру мүмкін болмады. Қайталап көріңіз.',
+    welcome: 'Қош келдіңіз, {name}!', bye: 'Аккаунттан шықтыңыз',
+    footer: 'Surai — Қазақстанға арналған іздеу',
+    loadMore: 'Тағы жүктеу',
+    readMore: 'Оқу',
+    justNow: 'қазір ғана', minutesAgo: '{n} мин бұрын', hoursAgo: '{n} сағ бұрын', daysAgo: '{n} күн бұрын'
+  }
+};
+
+const state = {
+  lang: store.get('lang', (navigator.language || '').toLowerCase().startsWith('kk') ? 'kk' : 'ru'),
+  theme: document.documentElement.getAttribute('data-theme') || 'light',
+  settings: Object.assign({ count: 10, depth: 'basic', kz: true, ai: true, saveHistory: true, time: '' }, store.get('settings', {})),
+  user: store.get('session', null),
+  q: '', tab: 'all', lastRender: null,
+  imagesOffset: 0, imagesTotal: [], imagesLoading: false,
+  backendAvailable: null
+};
+
+const t = (k, vars = {}) => {
+  let s = (I18N[state.lang] && I18N[state.lang][k]) || I18N.ru[k] || k;
+  for (const [a, b] of Object.entries(vars)) s = s.replace('{' + a + '}', b);
+  return s;
+};
+
+function applyI18n() {
+  document.documentElement.lang = state.lang === 'kk' ? 'kk' : 'ru';
+  $$('[data-i18n]').forEach(n => { n.textContent = t(n.dataset.i18n); });
+  $$('[data-i18n-ph]').forEach(n => { n.placeholder = t(n.dataset.i18nPh); });
+  $$('[data-i18n-title]').forEach(n => { const v = t(n.dataset.i18nTitle); n.title = v; n.setAttribute('aria-label', v); });
+  $$('[data-lang]').forEach(b => b.classList.toggle('on', b.dataset.lang === state.lang));
+  $('#authSubmit').textContent = t(authMode === 'login' ? 'submitLogin' : 'submitRegister');
+  updateTitle();
+  renderUser();
+}
+function updateTitle() { document.title = state.q ? state.q + ' — Surai' : 'Surai — ' + t('tagline'); }
+function setLang(l) {
+  state.lang = l; store.set('lang', l); applyI18n();
+  if (state.lastRender) state.lastRender();
+  loadNewsFeed();
+  loadTrends();
+}
+function setTheme(th) {
+  state.theme = th; store.set('theme', th);
+  document.documentElement.setAttribute('data-theme', th);
+  const m = $('meta[name="theme-color"]'); if (m) m.content = th === 'dark' ? '#0e1819' : '#f2f9f9';
+  $$('[data-theme-set]').forEach(b => b.classList.toggle('on', b.dataset.themeSet === th));
+}
+
+let toastTimer;
+function toast(msg) {
+  const n = $('#toast'); n.textContent = msg; n.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => n.classList.remove('show'), 2600);
+}
+
+function addHistory(q) {
+  if (!state.settings.saveHistory) return;
+  const h = store.get('history', []).filter(x => x.toLowerCase() !== q.toLowerCase());
+  h.unshift(q); store.set('history', h.slice(0, 30));
+}
+function removeHistory(q) { store.set('history', store.get('history', []).filter(x => x !== q)); }
+
+function routeFromHash() {
+  const p = new URLSearchParams(location.hash.slice(1));
+  const tab = p.get('tab');
+  return { q: (p.get('q') || '').trim(), tab: ['all', 'news', 'images'].includes(tab) ? tab : 'all' };
+}
+function navigate(q, tab) {
+  q = (q || '').trim();
+  if (!q) { if (location.hash && location.hash !== '#') location.hash = ''; else applyRoute(); return; }
+  const cur = routeFromHash();
+  if (cur.q === q && cur.tab === tab) applyRoute();
+  else location.hash = '#q=' + encodeURIComponent(q) + '&tab=' + tab;
+}
+function applyRoute() {
+  const r = routeFromHash();
+  if (!r.q) showHome(); else runSearch(r.q, r.tab);
+}
+const isHome = () => document.body.classList.contains('home');
+const curTab = () => isHome() ? 'all' : state.tab;
+
+function setMode(m) {
+  document.body.classList.toggle('home', m === 'home');
+  document.body.classList.toggle('results', m === 'results');
+  $('#homeView').hidden = m !== 'home';
+  $('#resultsView').hidden = m !== 'results';
+  $('#tabs').hidden = m !== 'results';
+}
+function showHome() {
+  seq++; if (controller) controller.abort();
+  state.q = ''; state.lastRender = null;
+  state.imagesOffset = 0; state.imagesTotal = [];
+  setMode('home'); syncInputs(); updateTitle();
+  if (matchMedia('(hover:hover)').matches) $('#homeBox input').focus();
+  loadNewsFeed();
+  loadTrends();
+  loadShortcuts();
+}
+
+const boxes = [];
+function setupSearchBox(box) {
+  box.append($('#tplSearch').content.cloneNode(true));
+  fillIcons(box);
+  const form = $('form', box), input = $('input', box), clear = $('.clear', box), mic = $('.mic', box), lucky = $('.lucky', box), sug = $('.suggest', box);
+  let items = [], active = -1, trends = [];
+  const hide = () => { sug.hidden = true; active = -1; };
+  const mark = () => $$('.sug-item', sug).forEach((n, i) => n.classList.toggle('active', i === active));
+
+  function show() {
+    const v = input.value.trim().toLowerCase();
+    const hist = state.settings.saveHistory ? store.get('history', []) : [];
+    const histItems = hist.filter(h => (!v || h.toLowerCase().includes(v)) && h.toLowerCase() !== v).slice(0, 4);
+    const trendItems = v ? trends.filter(tr => tr.toLowerCase().includes(v)).slice(0, 3) : [];
+    items = [...histItems.map(h => ({ text: h, type: 'history' })), ...trendItems.map(tr => ({ text: tr, type: 'trend' }))];
+    sug.replaceChildren();
+    if (!items.length) return hide();
+    if (histItems.length && !v) sug.append(el('div', { class: 'sug-title', text: t('recent') }));
+    items.forEach(item => {
+      const row = el('div', { class: 'sug-item', role: 'option' },
+        iconEl(item.type === 'history' ? 'clock' : 'flame'),
+        el('span', { class: 'sug-text', text: item.text }),
+        item.type === 'trend' ? el('span', { class: 'sug-trend', text: '🔥' }) : null,
+        item.type === 'history' ? el('button', { type: 'button', class: 'sug-del', title: t('remove'), 'aria-label': t('remove'), text: '×' }) : null);
+      row.addEventListener('mousedown', ev => {
+        ev.preventDefault();
+        if (ev.target.closest('.sug-del')) { removeHistory(item.text); show(); }
+        else { input.value = item.text; hide(); navigate(item.text, curTab()); }
+      });
+      sug.append(row);
+    });
+    sug.hidden = false; active = -1;
+  }
+
+  input.addEventListener('input', () => { clear.hidden = !input.value; show(); });
+  input.addEventListener('focus', () => {
+    if (!trends.length) {
+      fetch(CONFIG.API_BASE + '/api/trending?lang=' + state.lang).then(r => r.json()).then(d => { trends = d || []; }).catch(() => {});
+    }
+    show();
+  });
+  input.addEventListener('blur', hide);
+  input.addEventListener('keydown', e => {
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      if (sug.hidden) show();
+      if (!items.length) return;
+      e.preventDefault();
+      active = e.key === 'ArrowDown' ? (active + 1) % items.length : (active - 1 + items.length) % items.length;
+      mark();
+    } else if (e.key === 'Escape') hide();
+  });
+  clear.addEventListener('click', () => { input.value = ''; clear.hidden = true; input.focus(); show(); });
+  if (lucky) lucky.addEventListener('click', () => {
+    const randomQ = ['Қазақстан тарихы', 'Astana weather', 'Тенге курс', 'Бешбармақ', 'Қазақ тілі грамматика'][Math.floor(Math.random() * 5)];
+    input.value = randomQ;
+    navigate(randomQ, curTab());
+  });
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const q = (active >= 0 && items[active]) ? items[active].text : input.value.trim();
+    hide();
+    if (!q) return;
+    input.value = q; input.blur();
+    navigate(q, curTab());
+  });
+
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) mic.hidden = true;
+  else mic.addEventListener('click', () => {
+    try {
+      const r = new SR();
+      r.lang = state.lang === 'kk' ? 'kk-KZ' : 'ru-RU';
+      r.interimResults = false; r.maxAlternatives = 1;
+      r.onresult = ev => { const txt = ev.results[0][0].transcript; input.value = txt; clear.hidden = !txt; navigate(txt, curTab()); };
+      r.onend = r.onerror = () => mic.classList.remove('on');
+      mic.classList.add('on'); r.start();
+    } catch { mic.classList.remove('on'); }
+  });
+  boxes.push({ input, clear });
+}
+function syncInputs() { boxes.forEach(b => { b.input.value = state.q; b.clear.hidden = !state.q; }); }
+
+/* ---------- API запросы ---------- */
+async function apiSearch(q, tab, signal) {
+  const s = state.settings;
+  
+  // Пробуем через бэкенд
+  if (CONFIG.USE_BACKEND && state.backendAvailable !== false) {
+    try {
+      const res = await fetch(CONFIG.API_BASE + '/api/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: q, tab, settings: { ...s, lang: state.lang } }),
+        signal
+      });
+      if (res.ok) {
+        state.backendAvailable = true;
+        return res.json();
+      }
+      if (res.status === 503) state.backendAvailable = false;
+    } catch (e) {
+      if (e.name === 'AbortError') throw e;
+      state.backendAvailable = false;
+    }
+  }
+  
+  // Fallback прямой запрос
+  const body = {
+    query: q,
+    search_depth: tab === 'images' ? 'basic' : s.depth,
+    max_results: tab === 'images' ? CONFIG.IMAGES_PER_PAGE : s.count,
+    topic: tab === 'news' ? 'news' : 'general',
+    include_answer: tab === 'all' && !!s.ai,
+    include_images: tab === 'images',
+    include_image_descriptions: tab === 'images'
+  };
+  if (tab === 'all' && s.ai) {
+    body.include_answer_prompt = state.lang === 'kk'
+      ? 'Жауапты тек қазақ тілінде бер. Қысқа әрі нақты жауап бер. Markdown пайдаланба.'
+      : 'Отвечай только на русском языке. Давай краткий и точный ответ. Не используй Markdown.';
+  }
+  if (s.time) body.time_range = s.time;
+  if (tab !== 'news' && s.kz) body.country = 'kazakhstan';
+
+  const headers = { 'Content-Type': 'application/json' };
+  if (CONFIG.TAVILY_DIRECT_KEY) headers.Authorization = 'Bearer ' + CONFIG.TAVILY_DIRECT_KEY;
+  const res = await fetch(CONFIG.TAVILY_ENDPOINT, { method: 'POST', signal, headers, body: JSON.stringify(body) });
+  if (!res.ok) {
+    const code = (res.status === 401 || res.status === 403) ? 'auth' : (res.status === 429) ? 'limit' : 'http';
+    throw Object.assign(new Error('HTTP ' + res.status), { code, status: res.status });
+  }
+  return res.json();
+}
+
+let seq = 0, controller = null;
+const cache = new Map();
+
+async function runSearch(q, tab) {
+  state.q = q; state.tab = tab;
+  setMode('results'); syncInputs(); updateTitle();
+  $$('.tab').forEach(b => b.classList.toggle('on', b.dataset.tab === tab));
+  addHistory(q);
+  if (tab === 'images') { state.imagesOffset = 0; state.imagesTotal = []; }
+  const my = ++seq;
+  if (controller) controller.abort();
+  controller = new AbortController();
+  showLoading();
+  const key = JSON.stringify([q, tab, state.settings, state.lang]);
+  try {
+    let out = cache.get(key);
+    if (!out) {
+      const t0 = performance.now();
+      const data = await apiSearch(q, tab, controller.signal);
+      out = { data, ms: performance.now() - t0 };
+      cache.set(key, out);
+    }
+    if (my !== seq) return;
+    state.lastRender = () => renderResults(out.data, q, tab, out.ms);
+    state.lastRender();
+  } catch (e) {
+    if (e.name === 'AbortError' || my !== seq) return;
+    console.error('[Surai]', e);
+    state.lastRender = () => renderError(e);
+    state.lastRender();
+  }
+  window.scrollTo({ top: 0 });
+}
+
+/* ---------- Лента новостей ---------- */
+async function loadNewsFeed() {
+  if (!isHome()) return;
+  const grid = $('#newsGrid');
+  if (!grid) return;
+  
+  // Скелетоны
+  grid.replaceChildren();
+  for (let i = 0; i < 8; i++) {
+    const sk = el('div', { class: 'news-skeleton' },
+      el('div', { class: 'img' }),
+      el('div', { class: 'body' },
+        el('div', { class: 'sk', style: 'width:40%' }),
+        el('div', { class: 'sk', style: 'width:90%;height:16px' }),
+        el('div', { class: 'sk', style: 'width:100%' }),
+        el('div', { class: 'sk', style: 'width:70%' })));
+    if (i === 0) sk.classList.add('featured');
+    grid.append(sk);
+  }
+  
+  try {
+    let articles = [];
+    if (CONFIG.USE_BACKEND && state.backendAvailable !== false) {
+      const res = await fetch(`${CONFIG.API_BASE}/api/news?lang=${state.lang}&country=kz`);
+      if (res.ok) articles = await res.json();
+    }
+    
+    if (!articles.length) {
+      // Фоллбэк через rss2json
+      const feeds = state.lang === 'kk'
+        ? ['https://kazinform.kz/rss/kz']
+        : ['https://tengrinews.kz/rss/'];
+      for (const feed of feeds) {
+        try {
+          const r = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feed)}`);
+          if (r.ok) {
+            const d = await r.json();
+            if (d.items) articles.push(...d.items.slice(0, 8).map(i => ({
+              title: i.title,
+              description: (i.content || i.description || '').replace(/<[^>]*>/g, '').slice(0, 200),
+              url: i.link,
+              image: i.enclosure?.link || i.thumbnail || '',
+              source: d.feed?.title || feed,
+              pubDate: i.pubDate
+            })));
+          }
+        } catch {}
+      }
+    }
+    
+    grid.replaceChildren();
+    articles.slice(0, 9).forEach((a, i) => {
+      const card = el('a', { class: 'news-card' + (i === 0 ? ' featured' : ''), href: a.url, target: '_blank', rel: 'noopener noreferrer' },
+        el('div', { class: 'img' },
+          a.image ? el('img', { src: a.image, alt: a.title, loading: 'lazy', decoding: 'async' }) : el('div', { class: 'placeholder', text: '📰' })),
+        el('div', { class: 'body' },
+          el('div', { class: 'source' }, el('b', { text: a.source })),
+          el('h3', { text: a.title }),
+          el('p', { text: a.description || '' }),
+          el('div', { class: 'meta' },
+            el('span', { text: formatTimeAgo(a.pubDate) }))));
+      grid.append(card);
+    });
+  } catch (e) {
+    console.error('[News]', e);
+    grid.replaceChildren(el('p', { style: 'color:var(--muted);text-align:center;padding:20px', text: t('newsError') }));
+  }
+}
+
+function formatTimeAgo(dateStr) {
+  if (!dateStr) return '';
+  try {
+    const d = new Date(dateStr);
+    const diff = Date.now() - d.getTime();
+    const min = Math.floor(diff / 60000);
+    const hr = Math.floor(diff / 3600000);
+    const day = Math.floor(diff / 86400000);
+    if (min < 1) return t('justNow');
+    if (min < 60) return t('minutesAgo', { n: min });
+    if (hr < 24) return t('hoursAgo', { n: hr });
+    if (day < 7) return t('daysAgo', { n: day });
+    return d.toLocaleDateString(state.lang === 'kk' ? 'kk-KZ' : 'ru-RU', { day: 'numeric', month: 'short' });
+  } catch { return ''; }
+}
+
+/* ---------- Тренды ---------- */
+async function loadTrends() {
+  if (!isHome()) return;
+  const box = $('#trends');
+  if (!box) return;
+  
+  try {
+    let trends = [];
+    if (CONFIG.USE_BACKEND && state.backendAvailable !== false) {
+      const r = await fetch(`${CONFIG.API_BASE}/api/trending?lang=${state.lang}`);
+      if (r.ok) trends = await r.json();
+    }
+    if (!trends.length) {
+      trends = state.lang === 'kk'
+        ? ['Қазақстан жаңалықтары', 'Теңге бағамы', 'Астана ауа райы', 'Kaspi', 'eGov']
+        : ['Новости Казахстана', 'Курс тенге', 'Погода Астана', 'Kaspi', 'eGov'];
+    }
+    box.replaceChildren();
+    trends.slice(0, 10).forEach((tr, i) => {
+      const chip = el('button', { class: 'trend-chip' },
+        el('span', { class: 'rank', text: (i + 1) }),
+        el('span', { text: tr }));
+      chip.addEventListener('click', () => navigate(tr, 'all'));
+      box.append(chip);
+    });
+  } catch {}
+}
+
+/* ---------- Быстрые ссылки ---------- */
+async function loadShortcuts() {
+  if (!isHome()) return;
+  const box = $('#shortcuts');
+  if (!box) return;
+  
+  try {
+    let shortcuts = [];
+    if (CONFIG.USE_BACKEND && state.backendAvailable !== false) {
+      const r = await fetch(`${CONFIG.API_BASE}/api/shortcuts`);
+      if (r.ok) shortcuts = await r.json();
+    }
+    if (!shortcuts.length) {
+      shortcuts = [
+        { name: 'Kaspi', url: 'https://kaspi.kz', icon: '💳' },
+        { name: 'eGov', url: 'https://egov.kz', icon: '🏛️' },
+        { name: '2GIS', url: 'https://2gis.kz', icon: '🗺️' },
+        { name: 'Krisha', url: 'https://krisha.kz', icon: '🏠' },
+        { name: 'Kolesa', url: 'https://kolesa.kz', icon: '🚗' },
+        { name: 'YouTube', url: 'https://youtube.com', icon: '▶️' },
+        { name: 'Gmail', url: 'https://mail.google.com', icon: '📧' }
+      ];
+    }
+    box.replaceChildren();
+    shortcuts.forEach(s => {
+      const link = el('a', { class: 'shortcut', href: s.url, target: '_blank', rel: 'noopener noreferrer' },
+        el('div', { class: 'icon', text: s.icon, style: s.color ? `background:${s.color}22;color:${s.color}` : '' }),
+        el('div', { class: 'name', text: s.name }));
+      box.append(link);
+    });
+  } catch {}
+}
+
+function preloadImages(urls) {
+  urls.slice(0, 5).forEach(url => {
+    const link = document.createElement('link');
+    link.rel = 'preload';
+    link.as = 'image';
+    link.href = url;
+    link.referrerPolicy = 'no-referrer';
+    document.head.appendChild(link);
+    setTimeout(() => link.remove(), 10000);
+  });
+}
+
+function showLoading() {
+  const box = $('#results'); box.replaceChildren();
+  state.lastRender = null;
+  if (state.tab === 'images') {
+    const g = el('div', { class: 'grid' });
+    [180, 130, 220, 150, 200, 140, 170, 210, 160, 190, 140, 200].forEach(h => g.append(el('div', { class: 'sk', style: 'height:' + h + 'px;margin-bottom:12px' })));
+    box.append(g); return;
+  }
+  for (let i = 0; i < 5; i++) {
+    box.append(el('div', { class: 'sk-res' },
+      el('div', { class: 'sk', style: 'width:28%' }), el('div', { class: 'sk', style: 'width:62%;height:18px' }),
+      el('div', { class: 'sk', style: 'width:96%' }), el('div', { class: 'sk', style: 'width:80%' })));
+  }
+}
+
+function highlight(text, q) {
+  const words = q.split(/\s+/).filter(w => w.length > 2).map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+  const frag = document.createDocumentFragment();
+  if (!words.length) { frag.append(text); return frag; }
+  let re; try { re = new RegExp('(' + words.join('|') + ')', 'giu'); } catch { frag.append(text); return frag; }
+  text.split(re).forEach((part, i) => { if (!part) return; frag.append(i % 2 ? el('b', { text: part }) : part); });
+  return frag;
+}
+function clip(s, n) {
+  s = (s || '').replace(/\s+/g, ' ').trim();
+  if (s.length <= n) return s;
+  const cut = s.slice(0, n), sp = cut.lastIndexOf(' ');
+  return (sp > n * 0.6 ? cut.slice(0, sp) : cut) + '…';
+}
+function fmtDate(d) {
+  try {
+    const x = new Date(d); if (isNaN(x)) return '';
+    return x.toLocaleDateString(state.lang === 'kk' ? 'kk-KZ' : 'ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+  } catch { return ''; }
+}
+function resultItem(r, q, tab) {
+  const href = safeUrl(r.url); const u = new URL(href);
+  const host = u.hostname.replace(/^www\./, '');
+  let crumbs = '';
+  try { crumbs = u.pathname.split('/').filter(Boolean).slice(0, 2).map(decodeURIComponent).join(' › '); } catch {}
+  const fav = el('img', { src: 'https://www.google.com/s2/favicons?domain=' + encodeURIComponent(u.hostname) + '&sz=64', alt: '', loading: 'lazy', referrerpolicy: 'no-referrer' });
+  fav.addEventListener('error', () => { fav.style.visibility = 'hidden'; });
+  const snippet = el('p', { class: 'res-snippet' });
+  if (tab === 'news' && r.published_date) { const d = fmtDate(r.published_date); if (d) snippet.append(el('span', { class: 'res-date', text: d + ' —' })); }
+  snippet.append(highlight(clip(r.content, 300), q));
+  return el('article', { class: 'res' },
+    el('div', { class: 'res-site' }, fav, el('span', { class: 'dom', text: host }), crumbs ? el('span', { class: 'path', text: '› ' + crumbs }) : null),
+    el('a', { class: 'res-title', href, target: '_blank', rel: 'noopener noreferrer', text: r.title || host }),
+    snippet);
+}
+function aiCard(answer) {
+  return el('div', { class: 'ai' },
+    el('div', { class: 'ai-head' }, iconEl('spark'), el('span', { text: t('aiTitle') })),
+    el('p', { text: answer }), el('small', { text: t('aiNote') }));
+}
+function stateBox(icon, title, text, err) {
+  return el('div', { class: 'state' + (err ? ' err' : '') }, iconEl(icon), el('h3', { text: title }), el('p', { text }));
+}
+
+function createImageFigure(imgData, idx) {
+  const url = safeUrl(imgData.url);
+  if (!url) return null;
+  const isEager = idx < 8;
+  const img = el('img', { 
+    src: url, alt: imgData.description || state.q, 
+    loading: isEager ? 'eager' : 'lazy', decoding: 'async',
+    fetchpriority: idx < 4 ? 'high' : 'auto', referrerpolicy: 'no-referrer'
+  });
+  img.addEventListener('load', () => img.classList.add('loaded'));
+  img.addEventListener('error', () => { if (fig.parentNode) fig.remove(); });
+  const fig = el('figure', { tabindex: '0', role: 'button' }, img);
+  if (imgData.description) fig.append(el('figcaption', { text: imgData.description }));
+  fig.addEventListener('click', () => openLightbox(imgData));
+  fig.addEventListener('keydown', e => { if (e.key === 'Enter') openLightbox(imgData); });
+  return fig;
+}
+
+function renderResults(data, q, tab, ms) {
+  const box = $('#results'); box.replaceChildren();
+  if (tab === 'images') {
+    const imgs = (data.images || []).map(i => typeof i === 'string' ? { url: i, description: '' } : i).filter(i => i && safeUrl(i.url));
+    if (!imgs.length) return void box.append(stateBox('empty', t('noResTitle'), t('noResText')));
+    state.imagesTotal = imgs;
+    state.imagesOffset = imgs.length;
+    const grid = el('div', { class: 'grid', id: 'imagesGrid' });
+    imgs.forEach((img, idx) => { const fig = createImageFigure(img, idx); if (fig) grid.append(fig); });
+    box.append(grid);
+    preloadImages(imgs.slice(8, 16).map(i => safeUrl(i.url)).filter(Boolean));
+    return;
+  }
+  const list = (data.results || []).filter(r => r && safeUrl(r.url));
+  if (!list.length && !data.answer) return void box.append(stateBox('empty', t('noResTitle'), t('noResText')));
+  box.append(el('p', { class: 'meta', text: t('resCount', { n: list.length }) + ' · ' + (ms / 1000).toFixed(2) + ' ' + t('sec') }));
+  if (data.answer) box.append(aiCard(data.answer));
+  list.forEach(r => box.append(resultItem(r, q, tab)));
+}
+function renderError(e) {
+  const k = e.code === 'auth' ? 'errAuth' : e.code === 'limit' ? 'errLimit' : e.code === 'network' ? 'errNetwork' : 'errGeneric';
+  const box = $('#results'); box.replaceChildren(stateBox('alert', t('errTitle'), t(k), true));
+}
+
+/* ---------- модальные окна ---------- */
+let settingsDirty = false;
+function openModal(id) {
+  closeMenus();
+  $$('.overlay.open').forEach(m => m.classList.remove('open'));
+  const m = $('#' + id); m.classList.add('open');
+  const f = $('input:not([type=checkbox]),select,.btn-google,[data-close]', m); if (f && id === 'authModal') setTimeout(() => $('#aEmail').focus(), 30);
+}
+function closeModal() {
+  $$('.overlay.open').forEach(m => m.classList.remove('open'));
+  if (settingsDirty) { settingsDirty = false; if (!isHome()) applyRoute(); }
+}
+function closeMenus() { $('#userMenu').hidden = true; }
+function openLightbox(i) {
+  const u = safeUrl(i.url); if (!u) return;
+  $('#lbImg').src = u; $('#lbImg').alt = i.description || '';
+  $('#lbCap').textContent = i.description || ''; $('#lbCap').hidden = !i.description;
+  $('#lbOpen').href = u; openModal('lightbox');
+}
+
+function initSettings() {
+  const s = state.settings;
+  $('#setCount').value = String(s.count); $('#setDepth').value = s.depth; $('#setTime').value = s.time;
+  $('#setKz').checked = !!s.kz; $('#setAi').checked = !!s.ai; $('#setHist').checked = !!s.saveHistory;
+  const bind = (id, key, conv, affectsSearch) => $('#' + id).addEventListener('change', e => {
+    s[key] = conv(e.target); store.set('settings', s); if (affectsSearch) settingsDirty = true;
+  });
+  bind('setCount', 'count', n => +n.value, true);
+  bind('setDepth', 'depth', n => n.value, true);
+  bind('setTime', 'time', n => n.value, true);
+  bind('setKz', 'kz', n => n.checked, true);
+  bind('setAi', 'ai', n => n.checked, true);
+  bind('setHist', 'saveHistory', n => n.checked, false);
+  $('#clearHist').addEventListener('click', () => { store.del('history'); toast(t('histCleared')); });
+}
+
+let authMode = 'login';
+function renderUser() {
+  const u = state.user;
+  $('#loginBtn').hidden = !!u; $('#userWrap').hidden = !u;
+  if (!u) return;
+  const btn = $('#userBtn'); btn.replaceChildren();
+  const pic = u.picture && safeUrl(u.picture);
+  if (pic) btn.append(el('img', { src: pic, alt: '', referrerpolicy: 'no-referrer' }));
+  else btn.textContent = (u.name || u.email || '?').trim().charAt(0).toUpperCase();
+  $('#umName').textContent = u.name || ''; $('#umEmail').textContent = u.email || '';
+}
+function setSession(u) {
+  state.user = u; if (u) store.set('session', u); else store.del('session');
+  renderUser();
+}
+function authMsg(key) {
+  const m = $('#authMsg');
+  if (key) { m.dataset.i18n = key; m.textContent = t(key); } else { delete m.dataset.i18n; m.textContent = ''; }
+}
+function setAuthMode(m) {
+  authMode = m;
+  $$('#authTabs button').forEach(b => b.classList.toggle('on', b.dataset.auth === m));
+  $('#nameField').hidden = m !== 'register';
+  $('#aPass').autocomplete = m === 'login' ? 'current-password' : 'new-password';
+  $('#authSubmit').textContent = t(m === 'login' ? 'submitLogin' : 'submitRegister');
+  authMsg('');
+}
+async function hashPw(pw, salt) {
+  try {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(salt + ':' + pw));
+    return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+  } catch { return 'x' + btoa(unescape(encodeURIComponent(salt + ':' + pw))); }
+}
+function randSalt() {
+  try { return [...crypto.getRandomValues(new Uint8Array(12))].map(b => b.toString(16).padStart(2, '0')).join(''); }
+  catch { return Math.random().toString(36).slice(2) + Date.now().toString(36); }
+}
+async function submitAuth(e) {
+  e.preventDefault();
+  const email = $('#aEmail').value.trim().toLowerCase(), pass = $('#aPass').value, name = $('#aName').value.trim();
+  if (!/^\S+@\S+\.\S+$/.test(email)) return authMsg('badEmail');
+  if (pass.length < 6) return authMsg('shortPass');
+  const users = store.get('users', {});
+  if (authMode === 'register') {
+    if (users[email]) return authMsg('emailTaken');
+    const salt = randSalt();
+    users[email] = { name: name || email.split('@')[0], salt, hash: await hashPw(pass, salt) };
+    store.set('users', users);
+  } else {
+    const u = users[email];
+    if (!u || u.hash !== await hashPw(pass, u.salt)) return authMsg('badCreds');
+  }
+  const acc = users[email];
+  setSession({ name: acc.name, email, provider: 'email' });
+  $('#authForm').reset(); authMsg(''); closeModal();
+  toast(t('welcome', { name: acc.name }));
+}
+
+// ============ НАСТОЯЩИЙ GOOGLE AUTH через Firebase ============
+async function googleLogin() {
+  if (!firebaseAuth) return authMsg('googleFail');
+  
+  const provider = new firebase.auth.GoogleAuthProvider();
+  provider.setCustomParameters({ prompt: 'select_account' });
+  
+  try {
+    const result = await firebaseAuth.signInWithPopup(provider);
+    const idToken = await result.user.getIdToken();
+    
+    // Отправляем токен на бэкенд для верификации
+    if (CONFIG.USE_BACKEND && state.backendAvailable !== false) {
+      try {
+        const res = await fetch(CONFIG.API_BASE + '/api/auth/google', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ idToken })
+        });
+        if (res.ok) {
+          const user = await res.json();
+          setSession(user);
+          authMsg(''); closeModal();
+          toast(t('welcome', { name: user.name }));
+          return;
+        }
+      } catch {}
+    }
+    
+    // Если бэкенд недоступен, берём данные из Firebase напрямую
+    const user = result.user;
+    setSession({
+      name: user.displayName,
+      email: user.email,
+      picture: user.photoURL,
+      provider: 'google'
+    });
+    authMsg(''); closeModal();
+    toast(t('welcome', { name: user.displayName || user.email }));
+  } catch (e) {
+    console.error('[Google Auth]', e);
+    if (e.code === 'auth/popup-closed-by-user') return;
+    if (e.code === 'auth/cancelled-popup-request') return;
+    authMsg('googleFail');
+  }
+}
+
+// Слушаем изменения авторизации Firebase
+if (firebaseAuth) {
+  firebaseAuth.onAuthStateChanged(async user => {
+    if (user && !state.user) {
+      // Восстанавливаем сессию при загрузке
+      try {
+        const idToken = await user.getIdToken();
+        if (CONFIG.USE_BACKEND && state.backendAvailable !== false) {
+          try {
+            const res = await fetch(CONFIG.API_BASE + '/api/auth/google', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ idToken })
+            });
+            if (res.ok) {
+              const userData = await res.json();
+              setSession(userData);
+              return;
+            }
+          } catch {}
+        }
+        setSession({
+          name: user.displayName,
+          email: user.email,
+          picture: user.photoURL,
+          provider: 'google'
+        });
+      } catch {}
+    }
+  });
+}
+
+async function loadMoreImages() {
+  if (state.imagesLoading || state.tab !== 'images') return;
+  state.imagesLoading = true;
+  const grid = $('#imagesGrid');
+  if (!grid) { state.imagesLoading = false; return; }
+  const skeletons = [];
+  for (let i = 0; i < 8; i++) {
+    const sk = el('div', { class: 'sk', style: 'height:' + (130 + Math.random() * 90) + 'px;margin-bottom:12px' });
+    skeletons.push(sk);
+    grid.append(sk);
+  }
+  try {
+    const my = ++seq;
+    const data = await apiSearch(state.q, 'images', controller.signal);
+    if (my !== seq) return;
+    const imgs = (data.images || []).map(i => typeof i === 'string' ? { url: i, description: '' } : i).filter(i => i && safeUrl(i.url));
+    skeletons.forEach(sk => { if (sk.parentNode) sk.remove(); });
+    const existingUrls = new Set([...grid.querySelectorAll('img')].map(img => img.src));
+    let added = 0;
+    imgs.forEach(img => {
+      const url = safeUrl(img.url);
+      if (!url || existingUrls.has(url)) return;
+      existingUrls.add(url);
+      const fig = createImageFigure(img, state.imagesOffset + added);
+      if (fig) { grid.append(fig); added++; }
+    });
+    state.imagesOffset += added;
+    preloadImages(imgs.slice(added, added + 8).map(i => safeUrl(i.url)).filter(Boolean));
+  } catch (e) {
+    skeletons.forEach(sk => { if (sk.parentNode) sk.remove(); });
+  } finally {
+    state.imagesLoading = false;
+  }
+}
+
+function setupInfiniteScroll() {
+  let scrollTimeout;
+  window.addEventListener('scroll', () => {
+    if (state.tab !== 'images' || state.imagesLoading) return;
+    clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(() => {
+      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 500) {
+        loadMoreImages();
+      }
+    }, 100);
+  });
+}
+
+// Проверяем доступность бэкенда
+async function checkBackend() {
+  try {
+    const res = await fetch(CONFIG.API_BASE + '/health', { signal: AbortSignal.timeout(3000) });
+    state.backendAvailable = res.ok;
+    if (res.ok) console.log('✅ Backend доступен');
+  } catch {
+    state.backendAvailable = false;
+    console.log('⚠️ Backend недоступен, работаем напрямую');
+  }
+}
+
+function init() {
+  fillIcons();
+  setupSearchBox($('#hdrBox'));
+  setupSearchBox($('#homeBox'));
+  fillIcons();
+  initSettings();
+  setTheme(state.theme);
+  setupInfiniteScroll();
+
+  $$('[data-lang]').forEach(b => b.addEventListener('click', () => setLang(b.dataset.lang)));
+  $$('[data-theme-set]').forEach(b => b.addEventListener('click', () => setTheme(b.dataset.themeSet)));
+  $('#themeBtn').addEventListener('click', () => setTheme(state.theme === 'dark' ? 'light' : 'dark'));
+
+  $('#tabs').addEventListener('click', e => { const b = e.target.closest('.tab'); if (b && state.q) navigate(state.q, b.dataset.tab); });
+  $('#brandLink').addEventListener('click', e => { e.preventDefault(); navigate('', 'all'); });
+
+  $('#settingsBtn').addEventListener('click', () => openModal('settingsModal'));
+  $('#loginBtn').addEventListener('click', () => { setAuthMode('login'); openModal('authModal'); });
+  $$('.overlay').forEach(o => o.addEventListener('mousedown', e => { if (e.target === o) closeModal(); }));
+  $$('[data-close]').forEach(b => b.addEventListener('click', closeModal));
+  $('#userBtn').addEventListener('click', e => { e.stopPropagation(); $('#userMenu').hidden = !$('#userMenu').hidden; });
+  $('#umSettings').addEventListener('click', () => openModal('settingsModal'));
+  $('#umLogout').addEventListener('click', async () => { 
+    closeMenus(); 
+    setSession(null); 
+    if (firebaseAuth) {
+      try { await firebaseAuth.signOut(); } catch {}
+    }
+    toast(t('bye')); 
+  });
+  document.addEventListener('click', e => { if (!e.target.closest('#userWrap')) closeMenus(); });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { closeModal(); closeMenus(); }
+    else if (e.key === '/' && !/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName) && !$('.overlay.open')) {
+      e.preventDefault(); (isHome() ? $('#homeBox input') : $('#hdrBox input')).focus();
+    }
+  });
+
+  $('#authTabs').addEventListener('click', e => { const b = e.target.closest('button'); if (b) setAuthMode(b.dataset.auth); });
+  $('#authForm').addEventListener('submit', submitAuth);
+  $('#googleBtn').addEventListener('click', googleLogin);
+
+  window.addEventListener('hashchange', applyRoute);
+  applyI18n();
+  
+  // Сначала проверяем бэкенд, потом загружаем данные
+  checkBackend().then(() => {
+    applyRoute();
+  });
+}
+init();
+})();
+</script>
+</body>
+</html>
