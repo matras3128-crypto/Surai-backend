@@ -1,5 +1,7 @@
 export default async function handler(req, res) {
   const { lang = 'ru' } = req.query;
+  
+  // Попытка 1: RSS
   const feeds = lang === 'kk'
     ? ['https://kazinform.kz/rss/kz']
     : ['https://tengrinews.kz/rss/'];
@@ -21,7 +23,22 @@ export default async function handler(req, res) {
           })));
         }
       }
-    } catch {}
+    } catch (e) {
+      console.error('RSS error:', e.message);
+    }
   }
+  
+  // Фоллбэк: если RSS не сработал, вернуть мок-данные
+  if (!articles.length) {
+    const mock = lang === 'kk' ? [
+      { title: 'Қазақстан жаңалықтары', description: 'Соңғы жаңалықтар мен оқиғалар', url: 'https://kazinform.kz', source: 'Kazinform', pubDate: new Date().toISOString() },
+      { title: 'Экономикалық жаңалықтар', description: 'Теңге бағамы және нарық', url: 'https://tengrinews.kz', source: 'Tengri', pubDate: new Date().toISOString() }
+    ] : [
+      { title: 'Новости Казахстана', description: 'Последние новости и события', url: 'https://tengrinews.kz', source: 'Tengri News', pubDate: new Date().toISOString() },
+      { title: 'Экономические новости', description: 'Курс тенге и рынок', url: 'https://kazinform.kz', source: 'Kazinform', pubDate: new Date().toISOString() }
+    ];
+    return res.json(mock);
+  }
+  
   res.json(articles);
-}
+            }
